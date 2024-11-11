@@ -4,14 +4,30 @@
         class="searchbarinput"
         type="text" 
         placeholder="Поиск по имени или e-mail" 
+        v-model="searchQuery" 
+        @input="onSearch" 
         />
-        <button 
-        class="searchbarbutton">Очистить фильтр</button>
+        <button class="searchbarbutton" @click="clearSearch">Очистить фильтр</button>
     </div>
 </template>
 
 <script>
-
+export default {
+  data() {
+    return {
+      searchQuery: ''
+    };
+  },
+  methods: {
+    onSearch() {
+      this.$emit('search', this.searchQuery);
+    },
+    clearSearch() {
+      this.searchQuery = ''; 
+      this.$emit('search', this.searchQuery); 
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -25,7 +41,7 @@ div{
     box-shadow: 1px 18px 15px 0px rgba(148, 148, 148, 0.2);
     border-radius: 7px;
 }
-    
+
 
 .searchbarbutton {
     width: 150px;

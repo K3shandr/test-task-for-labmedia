@@ -1,8 +1,8 @@
 <template>
     <div>Сортировка: 
-        <button class="buttons">Дата регистрации</button>
-        <button class="buttons">Рейтинг</button>
-    </div>
+      <button class="buttons" @click="sortBy('registration_date')">Дата регистрации</button>
+      <button class="buttons" @click="sortBy('rating')">Рейтинг</button>
+  </div>
         <table>
             <tr>
                 <th class="names-tablet">Имя пользователя</th>
@@ -11,15 +11,27 @@
                 <th class="names-tablet">Рейтинг</th>
                 <th></th>
             </tr>
-            <tr class="users" v-for="user in users">
+            <tr class="users" v-for="user in paginatedUsers" :key="user.id">
                 <th class="username">{{user.username}}</th>
                 <th class="names-tablet">{{ user.email }}</th>
-                <th class="names-tablet">{{ user.registration_date }}</th>
+                <th class="names-tablet">{{ formatDate(user.registration_date) }}</th>
                 <th class="names-tablet">{{user.rating}}</th>
-                <th>X</th>
+                <th><button class="delbutton" @click="confirmDelete(user)">X</button></th>
             </tr>
             </table>
-    
+            <div v-if="showModal" class="modal-overlay">
+                <div class="modal-content">
+                    <p>Вы уверены, что хотите удалить пользователя {{ userToDelete?.username }}?</p>
+                    <button @click="deleteUser">Удалить</button>
+                    <button @click="closeModal">Отмена</button>
+                </div>
+            </div>
+
+              <div class="pagination">
+                <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">Назад</button>
+                <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+                <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">Вперед</button>
+               </div>
     
     
 </template>
@@ -31,7 +43,78 @@ export default {
             type:Array,
             Required:true,
         }
+    },
+    data() {
+    return {
+      sortByField: 'registration_date',
+      sortOrder: 'asc',
+      currentPage: 1,
+      itemsPerPage: 5,
+      showModal: false,      // Показать или скрыть модальное окно
+      userToDelete: null,
+    };
+  },
+    computed: {
+    // Общее количество страниц
+    totalPages() {
+      return Math.ceil(this.sortedUsers.length / this.itemsPerPage);
+    },
+    // Отсортированный список пользователей
+    sortedUsers() {
+      return [...this.users].sort((a, b) => {
+        if (this.sortByField === 'registration_date') {
+          // Преобразуем даты в объекты Date перед сравнением
+          const dateA = new Date(a.registration_date);
+          const dateB = new Date(b.registration_date);
+          return this.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        } else if (this.sortByField === 'rating') {
+          return this.sortOrder === 'asc' ? a.rating - b.rating : b.rating - a.rating;
+        }
+      });
+    },
+    paginatedUsers() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.sortedUsers.slice(start, end);
     }
+  },
+
+  methods: {
+    sortBy(field) {
+      if (this.sortByField === field) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortByField = field;
+        this.sortOrder = 'asc';
+      }
+      this.currentPage = 1; 
+    },
+    confirmDelete(user) {
+      this.userToDelete = user;
+      this.showModal = true;
+    },
+    // Закрываем модальное окно без удаления
+    closeModal() {
+      this.showModal = false;
+      this.userToDelete = null;
+    },
+    // Удаляем пользователя и закрываем модальное окно
+    deleteUser() {
+      this.$emit('delete-user', this.userToDelete.id); // Отправляем событие в родительский компонент
+      this.closeModal();
+    },
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    formatDate(date) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}.${month}.${year}`;
+    }
+  },
 }
 </script>
 
@@ -82,4 +165,40 @@ table th {
     
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+button{
+    border: none;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.delbutton {
+  color: red;
+  cursor: pointer;
+}
 </style>
