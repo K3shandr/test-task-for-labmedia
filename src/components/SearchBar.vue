@@ -7,7 +7,9 @@
         v-model="searchQuery" 
         @input="onSearch" 
         />
-        <button class="searchbarbutton" @click="clearSearch">Очистить фильтр</button>
+        <button class="clear-button-txt" @click="clearSearch">
+          <img src="../../public/clear-button.png" alt="Clear button" class="clear-button" />
+        Очистить фильтр</button>
     </div>
 </template>
 
@@ -37,25 +39,40 @@ div{
 .searchbar {
     height: 102px;
     display: flex;
-    flex-direction: column;
+    flex-direction: column ;
     box-shadow: 1px 18px 15px 0px rgba(148, 148, 148, 0.2);
     border-radius: 7px;
+    
 }
 
 
-.searchbarbutton {
-    width: 150px;
+.clear-button-txt {
     border: 0px;
     background: none;
     margin: 0px;
     font-size: 12px;
-
+    padding-left: 10px;
+    width: 159px;
+    height: 24px;
 }
 
 .searchbarinput {
+    flex: 1;
     background-color: #ECEFF0;
     border: none;
     border-radius: 4px;
     height: 34px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
 }
+
+.clear-button{
+  width: 16px;
+  height: 16px;
+  padding: 0px;
+  margin: 0px;
+  background-color: #FFFFFF;
+}
+
 </style>

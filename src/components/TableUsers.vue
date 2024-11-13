@@ -16,14 +16,18 @@
                 <th class="names-tablet">{{ user.email }}</th>
                 <th class="names-tablet">{{ formatDate(user.registration_date) }}</th>
                 <th class="names-tablet">{{user.rating}}</th>
-                <th><button class="delbutton" @click="confirmDelete(user)">X</button></th>
+                <th><button class="delbutton" @click="confirmDelete(user)"aria-label="Удалить">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 4L20 20" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M4 20L20 4" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+            </svg></button></th>
             </tr>
             </table>
             <div v-if="showModal" class="modal-overlay">
                 <div class="modal-content">
-                    <p>Вы уверены, что хотите удалить пользователя {{ userToDelete?.username }}?</p>
-                    <button @click="deleteUser">Удалить</button>
-                    <button @click="closeModal">Отмена</button>
+                    <p class="modal-message">Вы уверены, что хотите удалить пользователя {{ userToDelete?.username }}?</p>
+                    <button @click="deleteUser" class="delete-user">Да</button>
+                    <button @click="closeModal" class="close-modal">Нет</button>
                 </div>
             </div>
 
@@ -163,6 +167,7 @@ table th {
     padding-left: 15px;
     border-collapse: collapse;
     
+    
 }
 
 .pagination {
@@ -179,6 +184,23 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.delete-user{
+
+width: 90px;
+height: 27px;
+border-radius: 5px;
+}
+.close-modal{
+  background-color: #0CB4F1;
+  width: 90px;
+height: 27px;
+border-radius: 5px;
+}
+.modal-message{
+  background-color:  #FFFFFF;
+  font-size: 12px;
+}
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -191,14 +213,20 @@ button:disabled {
   justify-content: center;
 }
 .modal-content {
-  background: white;
+  background: #FFFFFF;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 .delbutton {
-  color: red;
   cursor: pointer;
+  border: none;
+  background-color: #ffffff;
+  margin: 0px;
+  width: 24px;
+  height: 24px;
+  padding: -15px;
+  
 }
 </style>
